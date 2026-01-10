@@ -1,8 +1,10 @@
 package com.jiajin.simplerestserver.infrastructure.entity;
 
+import com.jiajin.simplerestserver.controller.dto.GithubApiResponseDTO;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * table save github repository info
@@ -112,5 +114,21 @@ public class RepositoryCacheEntity {
 
     public void setCachedAt(Instant cachedAt) {
         this.cachedAt = cachedAt;
+    }
+
+    public void updateFrom(GithubApiResponseDTO latest) {
+
+        // Mutable Fields
+        this.fullName = latest.getFullName();
+        this.description = latest.getDescription();
+        this.cloneUrl = latest.getCloneUrl();
+        this.stars = latest.getStargazersCount();
+
+        if (this.createdAt == null) {
+            this.createdAt = latest.getCreatedAt();
+        }
+
+        // refresh cached time
+        this.cachedAt = Instant.from(LocalDateTime.now());
     }
 }

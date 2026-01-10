@@ -3,6 +3,7 @@ package com.jiajin.simplerestserver.controller.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 /**
  * @author ljj
@@ -22,6 +23,17 @@ public class GithubApiResponseDTO {
 
     @JsonProperty("created_at")
     private Instant createdAt;
+
+    public GithubApiResponseDTO() {
+    }
+
+    public GithubApiResponseDTO(String fullName, String description, String cloneUrl, int stargazersCount, Instant createdAt) {
+        this.fullName = fullName;
+        this.description = description;
+        this.cloneUrl = cloneUrl;
+        this.stargazersCount = stargazersCount;
+        this.createdAt = createdAt;
+    }
 
     public String getFullName() {
         return fullName;

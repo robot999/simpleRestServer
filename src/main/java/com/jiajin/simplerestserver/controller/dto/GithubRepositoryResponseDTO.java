@@ -1,5 +1,7 @@
 package com.jiajin.simplerestserver.controller.dto;
 
+import com.jiajin.simplerestserver.infrastructure.entity.RepositoryCacheEntity;
+
 import java.time.Instant;
 
 /**
@@ -28,4 +30,14 @@ public record GithubRepositoryResponseDTO(
          * Date of creation
          */
         Instant createdAt
-){}
+){
+    public static GithubRepositoryResponseDTO from(RepositoryCacheEntity entity) {
+        return new GithubRepositoryResponseDTO(
+                entity.getFullName(),
+                entity.getDescription(),
+                entity.getCloneUrl(),
+                entity.getStars(),
+                entity.getCreatedAt()
+        );
+    }
+}
