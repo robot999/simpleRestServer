@@ -6,7 +6,7 @@ import com.jiajin.simplerestserver.infrastructure.dao.RepositoryCacheRepository;
 import com.jiajin.simplerestserver.infrastructure.dao.RepositoryHistoryRepository;
 import com.jiajin.simplerestserver.infrastructure.entity.RepositoryCacheEntity;
 import com.jiajin.simplerestserver.infrastructure.entity.RepositoryCacheHistoryEntity;
-import com.jiajin.simplerestserver.util.TransactionExecutor;
+import com.jiajin.simplerestserver.infrastructure.tx.TransactionExecutor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -111,7 +111,7 @@ public class GithubRepositoryService {
             log.info("Refreshing repository cache for {}/{},start!--------", owner, repo);
             GithubApiResponseDTO latest = githubApiClient.fetchRepository(owner, repo);
 
-            transactionExecutor.executeRequireNew(() -> {
+            transactionExecutor.requiresNew(() -> {
                 if (hasChanged(oldCache, latest)) {
                     historyRepository.save(RepositoryCacheHistoryEntity.from(oldCache));
                     oldCache.updateFrom(latest);
