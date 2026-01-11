@@ -29,17 +29,17 @@ public class TransactionExecutor {
 
     /* ====================== Public API ====================== */
 
-    /** 默认 REQUIRED，有返回值 */
+    /** DEFAULT REQUIRED */
     public <T> T required(TxCallable<T> callable) throws Exception {
         return execute(Propagation.REQUIRED, callable);
     }
 
-    /** REQUIRED_NEW，有返回值 */
+    /** REQUIRED_NEW */
     public <T> T requiresNew(TxCallable<T> callable) throws Exception {
         return execute(Propagation.REQUIRES_NEW, callable);
     }
 
-    /** 指定传播行为，有返回值 */
+    /** Specify Transaction Propagation Behavior */
     public <T> T execute(Propagation propagation, TxCallable<T> callable) throws Exception {
         TransactionTemplate template = buildTemplate(propagation);
         try {
@@ -56,17 +56,17 @@ public class TransactionExecutor {
         }
     }
 
-    /** 默认 REQUIRED，无返回值 */
+    /** DEFAULT REQUIRED */
     public void required(TxRunnable runnable) throws Exception {
         execute(Propagation.REQUIRED, runnable);
     }
 
-    /** REQUIRED_NEW，无返回值 */
+    /** REQUIRED_NEW */
     public void requiresNew(TxRunnable runnable) throws Exception {
         execute(Propagation.REQUIRES_NEW, runnable);
     }
 
-    /** 指定传播行为，无返回值 */
+    /** Specify Transaction Propagation Behavior */
     public void execute(Propagation propagation, TxRunnable runnable) throws Exception {
         TransactionTemplate template = buildTemplate(propagation);
         try {
