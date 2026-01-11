@@ -38,19 +38,23 @@ public class GithubRepositoryService {
     private final ConcurrentHashMap<String, Object> locks = new ConcurrentHashMap<>();
 
     public GithubRepositoryResponseDTO getRepository(String owner, String repo) {
+        log.info("Get repository request: {}/{}", owner, repo);
         String key = owner + "/" + repo;
         Optional<RepositoryCacheEntity> optional = cacheRepository.findByOwnerAndName(owner, repo);
 
         // cache exists
         if (optional.isPresent()) {
+            log.debug("Try to load cache for {}/{}", owner, repo);
             RepositoryCacheEntity cache = optional.get();
 
             if (isExpired(cache)) {
                 // expired: asynchronous refresh
+                log.warn("Cache expired for {}/{}", owner, repo);
                 refreshAsync(owner, repo, cache);
             }
 
             // key point: directly return the cache regardless of whether expired or not
+            log.info("Cache miss for {}/{}", owner, repo);
             return GithubRepositoryResponseDTO.from(cache);
         }
 
@@ -104,6 +108,7 @@ public class GithubRepositoryService {
 
     private void doRefreshAsync(String owner, String repo, RepositoryCacheEntity oldCache) {
         try {
+            log.info("Refreshing repository cache for {}/{},start!--------", owner, repo);
             GithubApiResponseDTO latest = githubApiClient.fetchRepository(owner, repo);
 
             if (hasChanged(oldCache, latest)) {
@@ -116,6 +121,7 @@ public class GithubRepositoryService {
             transactionExecutor.executeRequireNew(()->{
                 cacheRepository.save(oldCache);
             });
+            log.info("Refreshing repository cache for {}/{},finish!-----------", owner, repo);
 
         } catch (Exception ex) {
             log.warn("Async refresh failed for {}/{}", owner, repo, ex);

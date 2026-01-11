@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 /**
  * table save github repository info
@@ -129,6 +130,6 @@ public class RepositoryCacheEntity {
         }
 
         // refresh cached time
-        this.cachedAt = Instant.from(LocalDateTime.now());
+        this.cachedAt = Instant.from(LocalDateTime.now().toInstant(ZoneOffset.UTC));
     }
 }
