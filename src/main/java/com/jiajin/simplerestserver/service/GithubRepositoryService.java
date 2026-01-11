@@ -79,7 +79,7 @@ public class GithubRepositoryService {
         entity.setCloneUrl(apiResponse.getCloneUrl());
         entity.setStars(apiResponse.getStargazersCount());
         entity.setCreatedAt(apiResponse.getCreatedAt());
-        entity.setCachedAt(Instant.now());
+        entity.setCachedAt(LocalDateTime.now().toInstant(ZoneOffset.UTC));
 
         cacheRepository.save(entity);
 
@@ -111,20 +111,17 @@ public class GithubRepositoryService {
             log.info("Refreshing repository cache for {}/{},start!--------", owner, repo);
             GithubApiResponseDTO latest = githubApiClient.fetchRepository(owner, repo);
 
-            if (hasChanged(oldCache, latest)) {
-                historyRepository.save(
-                        RepositoryCacheHistoryEntity.from(oldCache)
-                );
-            }
-
-            oldCache.updateFrom(latest);
-            transactionExecutor.executeRequireNew(()->{
-                cacheRepository.save(oldCache);
+            transactionExecutor.executeRequireNew(() -> {
+                if (hasChanged(oldCache, latest)) {
+                    historyRepository.save(RepositoryCacheHistoryEntity.from(oldCache));
+                    oldCache.updateFrom(latest);
+                    cacheRepository.save(oldCache);
+                }
             });
             log.info("Refreshing repository cache for {}/{},finish!-----------", owner, repo);
 
         } catch (Exception ex) {
-            log.warn("Async refresh failed for {}/{}", owner, repo, ex);
+            log.error("Async refresh failed for {}/{}", owner, repo, ex);
         }
     }
 

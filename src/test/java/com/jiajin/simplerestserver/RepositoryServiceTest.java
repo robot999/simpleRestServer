@@ -37,27 +37,27 @@ public class RepositoryServiceTest {
     void should_return_old_cache_when_expired() {
         // given：an expired cache
         RepositoryCacheEntity cache = new RepositoryCacheEntity();
-        cache.setOwner("spring-projects");
-        cache.setName("spring-boot");
+        cache.setOwner("robot999");
+        cache.setName("simpleRestServer");
         cache.setDescription("old description");
         cache.setStars(1);
         LocalDateTime expiredTime = LocalDateTime.now().minusHours(2);
-        cache.setCachedAt(expiredTime.toInstant(ZoneOffset.ofHours(8)));
+        cache.setCachedAt(expiredTime.toInstant(ZoneOffset.UTC));
         cacheRepository.save(cache);
 
         // GitHub return new data (async use)
-        when(githubClient.fetchRepository("spring-projects", "spring-boot"))
+        when(githubClient.fetchRepository("robot999", "simpleRestServer"))
                 .thenReturn(new GithubApiResponseDTO(
-                        "spring-projects/spring-boot",
+                        "robot999/simpleRestServer",
                         "new description",
                         "https://github.com/xxx.git",
                         10,
-                        LocalDateTime.now().toInstant(ZoneOffset.ofHours(8))
+                        LocalDateTime.now().toInstant(ZoneOffset.UTC)
                 ));
 
         // when
         Optional<RepositoryCacheEntity> response =
-                repositoryService.findByOwnerAndName("spring-projects", "spring-boot");
+                repositoryService.findByOwnerAndName("robot999", "simpleRestServer");
 
         // then：returned data is still old
         if (response.isPresent()) {

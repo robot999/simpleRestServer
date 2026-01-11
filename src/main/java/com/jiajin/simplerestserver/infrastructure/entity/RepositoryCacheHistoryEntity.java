@@ -3,6 +3,7 @@ package com.jiajin.simplerestserver.infrastructure.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 /**
  * @author ljj
@@ -35,7 +36,7 @@ public class RepositoryCacheHistoryEntity {
         history.repoName = cache.getFullName();
         history.description = cache.getDescription();
         history.stars = cache.getStars();
-        history.cachedAt = LocalDateTime.from(cache.getCachedAt());
+        history.cachedAt = LocalDateTime.ofInstant(cache.getCachedAt(), ZoneOffset.UTC);
         history.archivedAt = LocalDateTime.now();
         return history;
     }
